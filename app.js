@@ -3,19 +3,13 @@ const { PORT = 3001 } = process.env;
 
 // Connect Express
 const express = require("express");
+
 const app = express();
 
 // mongoose connection
 const mongoose = require("mongoose");
-mongoose.connect(
-  "mongodb://127.0.0.1:27017/wtwr_db",
-  (r) => {
-    console.log("Connected to DB");
-  },
-  (e) => {
-    console.log(`DB error: ${e}`);
-  }
-);
+
+mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
 // User ID
 app.use((req, res, next) => {
@@ -27,6 +21,7 @@ app.use((req, res, next) => {
 
 // Routes
 const routes = require("./routes");
+
 app.use(express.json());
 app.use(routes);
 
