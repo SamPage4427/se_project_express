@@ -12,12 +12,12 @@ const mongoose = require("mongoose");
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
 // User ID
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6484cd87755ff5940b282596",
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: "6484cd87755ff5940b282596",
+//   };
+//   next();
+// });
 
 // Routes
 const routes = require("./routes");
