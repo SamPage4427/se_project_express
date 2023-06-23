@@ -22,10 +22,16 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemsId } = req.params;
+  const userId = req.user._id;
 
   ClothingItem.findByIdAndDelete(itemsId)
     .orFail()
-    .then((item) => res.send({ item }))
+    .then((item) => {
+      if (item.owner.equals(userId)) {
+        return item.remove(() => res.send({ item }));
+      }
+      return res.status(403).send({ message: "Not Authorized to delete" });
+    })
     .catch((e) => itemError(req, res, e));
 };
 

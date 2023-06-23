@@ -2,7 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const { itemError } = require("../utils/errors");
+const { itemError, ERROR_11000, ERROR_409 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 const getUsers = (req, res) => {
@@ -12,11 +12,9 @@ const getUsers = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const { _id } = req.params;
-  console.log({ _id });
-  console.log(req.params);
+  const userId = req.user._id;
 
-  User.findById({ _id })
+  User.findById(userId)
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((e) => itemError(req, res, e));
@@ -24,18 +22,19 @@ const getCurrentUser = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+
   bcrypt.hash(password, 10).then((hash) => {
     User.create({ name, avatar, email, password: hash })
-      .then((user) => res.send({ data: user }))
+      .then((user) => res.send({ name, avatar, email: user.email }))
       .catch((e) => {
-        if (e === "MongoServerError") {
+        console.error(e);
+        if (e.code === 11000) {
           const error = new Error("User already exists");
-          error.statusCode = 11000;
-          itemError(req, res, e);
+          return res.status(ERROR_409).send(error);
+        } else {
+          return itemError(req, res, e);
         }
-      })
-      .then((user) => res.send({ data: user }))
-      .catch((e) => itemError(req, res, e));
+      });
   });
 };
 
@@ -50,10 +49,11 @@ const login = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { name, avatar, _id } = req.body;
+  const { name, avatar } = req.body;
+  const userId = req.user._id;
 
   User.findByIdAndUpdate(
-    { _id },
+    userId,
     { name, avatar },
     { new: true, runValidators: true, upsert: true }
   )
