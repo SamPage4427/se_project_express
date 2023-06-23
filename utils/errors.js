@@ -12,7 +12,6 @@ const ERROR_403 = 403;
 const ERROR_404 = 404;
 const ERROR_409 = 409;
 const ERROR_500 = 500;
-const ERROR_11000 = 11000;
 
 const itemError = (req, res, e) => {
   if (e.name === "ValidationError") {
@@ -34,6 +33,5 @@ module.exports = {
   ERROR_401,
   ERROR_403,
   ERROR_409,
-  ERROR_11000,
   itemError,
 };

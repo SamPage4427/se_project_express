@@ -19,15 +19,15 @@ mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 //   next();
 // });
 
+const cors = require("cors");
+
+app.use(cors);
+
 // Routes
 const routes = require("./routes");
 
 app.use(express.json());
 app.use(routes);
-
-const cors = require("cors");
-
-app.use(cors);
 
 // Listener
 app.listen(PORT, () => {

@@ -1,8 +1,9 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const { itemError, ERROR_11000, ERROR_409 } = require("../utils/errors");
+const User = require("../models/user");
+
+const { itemError, ERROR_409 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 const getUsers = (req, res) => {
@@ -31,21 +32,20 @@ const createUser = (req, res) => {
         if (e.code === 11000) {
           const error = new Error("User already exists");
           return res.status(ERROR_409).send(error);
-        } else {
-          return itemError(req, res, e);
         }
+
+        return itemError(req, res, e);
       });
   });
 };
 
 const login = (req, res) => {
   const { email, password } = req.body;
-
-  User.findUserByCredentials(email, password).then((user) => {
-    return res.send({
+  User.findUserByCredentials(email, password).then((user) =>
+    res.send({
       token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" }),
-    });
-  });
+    })
+  );
 };
 
 const updateProfile = (req, res) => {
@@ -63,6 +63,7 @@ const updateProfile = (req, res) => {
 };
 
 module.exports = {
+  getUsers,
   getCurrentUser,
   createUser,
   login,
