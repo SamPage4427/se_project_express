@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
     required: true,
     minlength: 2,
     maxlength: 30,
-    role: { type: String, default: "Elise Bouer" },
+    default: "Elise Bouer",
   },
   avatar: {
     type: String,
@@ -19,11 +19,8 @@ const userSchema = mongoose.Schema({
       },
       message: "You must enter a valid URL",
     },
-    role: {
-      type: String,
-      default:
-        "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr-project/Elise.png",
-    },
+    default:
+      "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr-project/Elise.png",
   },
   email: {
     type: String,
@@ -39,7 +36,6 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
 });

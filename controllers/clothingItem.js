@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { itemError } = require("../utils/errors");
+const { itemError, ERROR_403 } = require("../utils/errors");
 
 // 400 e.name = ValidationError, CastError
 // 404 e.name = DocumentNotFoundError
@@ -24,13 +24,15 @@ const deleteItem = (req, res) => {
   const { itemsId } = req.params;
   const userId = req.user._id;
 
-  ClothingItem.findByIdAndDelete(itemsId)
+  ClothingItem.findById(itemsId)
     .orFail()
     .then((item) => {
       if (item.owner.equals(userId)) {
         return item.remove(() => res.send({ item }));
       }
-      return res.status(403).send({ message: "Not Authorized to delete" });
+      return res
+        .status(ERROR_403)
+        .send({ message: "Not Authorized to delete" });
     })
     .catch((e) => itemError(req, res, e));
 };
