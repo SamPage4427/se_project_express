@@ -21,6 +21,10 @@ const routes = require("./routes");
 app.use(express.json());
 app.use(routes);
 
+// Error Handler
+const errorHandler = require("./middlewares/error-handler");
+app.use(errorHandler);
+
 // Listener
 app.listen(PORT, () => {
   console.log(`App is listening on port: ${PORT}`);
