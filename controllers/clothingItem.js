@@ -51,7 +51,7 @@ const likeItem = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
+    .orFail(new NotFoundError("Item not found"))
     .then((item) => res.send({ data: item }))
     .catch((e) => itemError(req, res, e));
 };
@@ -62,7 +62,7 @@ const unlikeItem = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
+    .orFail(new NotFoundError("Item not found"))
     .then((item) => res.send({ data: item }))
     .catch((e) => itemError(req, res, e));
 };
