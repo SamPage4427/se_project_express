@@ -8,20 +8,28 @@ const app = express();
 
 // mongoose connection
 const mongoose = require("mongoose");
-
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
+// CORS
 const cors = require("cors");
-
 app.use(cors());
+
+//Request and Error loggers
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+
+app.use(requestLogger);
 
 // Routes
 const routes = require("./routes");
-
 app.use(express.json());
 app.use(routes);
 
-// Error Handler
+// Errors
+app.use(errorLogger);
+
+const { errors } = require("celebrate");
+app.use(errors());
+
 const errorHandler = require("./middlewares/error-handler");
 app.use(errorHandler);
 

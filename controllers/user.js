@@ -22,19 +22,17 @@ const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   User.findOne({ email })
-    .then((user) => res.send(user))
-    .catch((existingUser) => {
+    .then((existingUser) => {
       if (existingUser) {
         return next(new ConflictError("Email already in use"));
       }
-    });
-
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => {
-      User.create({ name, avatar, email, password: hash }).then((user) =>
-        res.send({ name, avatar, email: user.email })
-      );
+    })
+    .then(() => {
+      return bcrypt.hash(password, 10).then((hash) => {
+        return User.create({ name, avatar, email, password: hash }).then(
+          (user) => res.send({ name, avatar, email: user.email })
+        );
+      });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
