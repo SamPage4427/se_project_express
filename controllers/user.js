@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
-const { JWT_SECRET } = require("../utils/config");
+const { JWT_SECRET, NODE_ENV } = process.env;
 
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
@@ -48,7 +48,11 @@ const login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) =>
       res.send({
-        token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" }),
+        token: jwt.sign(
+          { _id: user._id },
+          NODE_ENV === "production" ? JWT_SECRET : "some-secret-key",
+          { expiresIn: "7d" }
+        ),
       })
     )
     .catch(() => next(new BadRequestError("Invalid data sent to the server")));
