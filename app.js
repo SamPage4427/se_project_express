@@ -22,6 +22,12 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 app.use(requestLogger);
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 // Routes
 const routes = require("./routes");
 app.use(express.json());
