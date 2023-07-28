@@ -1,15 +1,13 @@
 const ClothingItem = require("../models/clothingItem");
-const { itemError, ERROR_403 } = require("../utils/errors");
 
 const BadRequestError = require("../errors/BadRequestError");
-const UnauthorizedError = require("../errors/UnauthorizedError");
 const ForbiddenError = require("../errors/ForbiddenError");
 const NotFoundError = require("../errors/NotFoundError");
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((e) => itemError(req, res, e));
+    .catch(next);
 };
 
 const createItem = (req, res, next) => {
@@ -36,13 +34,9 @@ const deleteItem = (req, res, next) => {
       if (item.owner.equals(userId)) {
         return item.remove(() => res.send({ item }));
       }
+      return next(new ForbiddenError("User not authorized to delete item"));
     })
-    .catch((err, item) => {
-      if (item.owner !== userId) {
-        return next(new ForbiddenError("User not authorized to delete item"));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 const likeItem = (req, res, next) => {

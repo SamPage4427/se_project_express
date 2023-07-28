@@ -8,6 +8,7 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 const ConflictError = require("../errors/ConflictError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
@@ -27,19 +28,20 @@ const createUser = (req, res, next) => {
         return next(new ConflictError("Email already in use"));
       }
     })
-    .then(() => {
-      return bcrypt.hash(password, 10).then((hash) => {
-        return User.create({ name, avatar, email, password: hash }).then(
-          (user) => res.send({ name, avatar, email: user.email })
-        );
-      });
-    })
+    .then(() =>
+      bcrypt
+        .hash(password, 10)
+        .then((hash) =>
+          User.create({ name, avatar, email, password: hash }).then((user) =>
+            res.send({ name, avatar, email: user.email })
+          )
+        )
+    )
     .catch((err) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestError("Invalid data sent to the server"));
-      } else {
-        return next(err);
       }
+      return next(err);
     });
 };
 
@@ -55,7 +57,7 @@ const login = (req, res, next) => {
         ),
       })
     )
-    .catch(() => next(new BadRequestError("Invalid data sent to the server")));
+    .catch(() => next(new UnauthorizedError("Not authorized")));
 };
 
 const updateProfile = (req, res, next) => {
@@ -72,9 +74,8 @@ const updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestError("Invalid data sent to server"));
-      } else {
-        next(err);
       }
+      next(err);
     });
 };
 

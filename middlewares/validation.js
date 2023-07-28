@@ -48,7 +48,7 @@ const validateSignin = celebrate({
       "string.empty": "The `email` field must be filled out",
       "string.email": "The `email` field must contain a valid email",
     }),
-    password: Joi.string.required().messages({
+    password: Joi.string().required().messages({
       "string.empty": "The `password` field must be filled out",
     }),
   }),
@@ -56,7 +56,7 @@ const validateSignin = celebrate({
 
 const validateId = celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().hex().length(24).messages({
+    itemId: Joi.string().hex().length(24).messages({
       "string.hex": "The `id` should be in hexadecimal form",
       "string.length": "The `id` should be 24 characters long",
     }),

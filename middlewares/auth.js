@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = process.env;
+
+const { JWT_SECRET, NODE_ENV } = process.env;
 const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const extractBearerToken = (header) => header.replace("Bearer ", "");
@@ -14,9 +15,12 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(
+      token,
+      NODE_ENV === "production" ? JWT_SECRET : "some-secret-key"
+    );
   } catch (e) {
-    return next(e);
+    return next(new UnauthorizedError("Authorization token is incorrect"));
   }
 
   req.user = payload;
