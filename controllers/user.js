@@ -27,6 +27,7 @@ const createUser = (req, res, next) => {
       if (existingUser) {
         return next(new ConflictError("Email already in use"));
       }
+      return;
     })
     .then(() =>
       bcrypt
