@@ -1,8 +1,6 @@
 // PORT
 require("dotenv").config();
 
-console.log(process.env.NODE_ENV);
-
 const { PORT = 3001 } = process.env;
 
 // Connect Express

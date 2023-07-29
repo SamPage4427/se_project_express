@@ -75,7 +75,7 @@ const updateProfile = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestError("Invalid data sent to server"));
       }
-      next(err);
+      return next(err);
     });
 };
 

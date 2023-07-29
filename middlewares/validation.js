@@ -2,7 +2,7 @@ const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
 
 const validateUrl = (value, helpers) => {
-  if (validator.isUrl(value)) {
+  if (validator.isURL(value)) {
     return value;
   }
   return helpers.error("string.uri");
@@ -15,10 +15,11 @@ const validateItem = celebrate({
       "string.min": "The required length must be more than 2 characters",
       "string.max": "The required length must be less than 30 characters",
     }),
-    imageUrl: Joi.required().custom(validateUrl).messages({
+    imageUrl: Joi.string().required().custom(validateUrl).messages({
       "string.empty": "The `imageUrl` field cannot be empty",
       "string.uri": "The `imageUrl` field must contain a url",
     }),
+    weather: Joi.string().valid("hot", "warm", "cold").required(),
   }),
 });
 
@@ -54,9 +55,20 @@ const validateSignin = celebrate({
   }),
 });
 
+const validateUpdateUser = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().messages({
+      "string.empty": "The `name` field must be filled out",
+    }),
+    avatar: Joi.string().empty("").custom(validateUrl).messages({
+      "string.uri": "The `avatar` field must contain a url",
+    }),
+  }),
+});
+
 const validateId = celebrate({
   params: Joi.object().keys({
-    itemId: Joi.string().hex().length(24).messages({
+    itemsId: Joi.string().hex().length(24).messages({
       "string.hex": "The `id` should be in hexadecimal form",
       "string.length": "The `id` should be 24 characters long",
     }),
@@ -67,5 +79,6 @@ module.exports = {
   validateItem,
   validateUser,
   validateSignin,
+  validateUpdateUser,
   validateId,
 };
